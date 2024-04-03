@@ -4,6 +4,7 @@
 int main(){
     printf("Hello World from CMSIS DSP  \n");
     //test_ifft();
-    test_cfft();
+    //test_cfft();
+    generateSpectrogram();
     return 0;
 }

@@ -59,3 +59,5 @@ int test_ifft(void);
 
 void print_array(float *data, int size);
 void generate_composit(float32_t fs, float32_t freq[], float32_t ampl[], int freqLen, int n_samples, float32_t *freqOut);
+
+void generateSpectrogram();
