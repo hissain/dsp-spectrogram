@@ -4,13 +4,23 @@ cmake_minimum_required(VERSION 3.11)
 # Assign a name to the global project
 project(spectrogram)
 
-# Set the version of C/C++ (here C++17)
-set(CMAKE_CXX_STANDARD 17)
+# Load all the source file within the folder src
+file(GLOB SOURCE_FILES_SPECT src/*.cpp src/*.c)
 
-add_subdirectory(cmsis)
+# Add static library
+add_library(cmsisdsp STATIC IMPORTED)
+set_target_properties(cmsisdsp PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_LIST_DIR}/libs/libCMSISDSP.a)
 
-file(GLOB SRC src/*.c src/*.cpp src/*.h)
+# Define the executable of the application !
+add_executable(main ${SOURCE_FILES_SPECT})
 
-add_executable(main ${SRC})
+# Indicate that the app uses the header files within the folder include.
+# Using target_include_directories instead of include_directories enables CMake to
+# transitively make available the header files in the projects that depend on this library.
+target_include_directories(main PUBLIC inc)
+target_include_directories(main PUBLIC inc/main)
+target_include_directories(main PUBLIC inc/core)
+target_include_directories(main PUBLIC inc/dsp)
 
-target_link_libraries(main CMSISDSP)
+# Indicate that the application depends on the library math
+target_link_libraries(main cmsisdsp)

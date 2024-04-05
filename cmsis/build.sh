@@ -12,3 +12,5 @@ cmake ..
 # Build the project using make (assuming it's a Makefile-based project)
 make
 
+
+cp build/Source/libCMSISDSP.a ../libs/
