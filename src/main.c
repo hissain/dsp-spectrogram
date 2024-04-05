@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "spect_fft.h"
+#include "spect_utils.h"
 
 int main(){
     printf("Hello World from CMSIS DSP  \n");

@@ -31,6 +31,7 @@ void exportSignalData(float32_t *signal, int len, char *filename) {
         return;
     }
 
+    printf("Exporting signal data\n");
     // Write spectrogram data to CSV file
     for (int i = 0; i < len; i++) {
         if (i != len-1){
@@ -43,6 +44,7 @@ void exportSignalData(float32_t *signal, int len, char *filename) {
 }
 
 void generateCompositSignal(float32_t fs, float32_t freq[], float32_t ampl[], int freqLen, int n_samples, float32_t *freqOut){
+    printf("Generating composite signal\n");
     float dt = 1.0f / fs; // Time step
     float *t = (float*)malloc(n_samples * sizeof(float)); // Time array
 
@@ -66,33 +68,41 @@ void generateCompositSignal(float32_t fs, float32_t freq[], float32_t ampl[], in
 }
 
 
-#define SAMPLING_RATE 25000
-#define FFT_SIZE 256
-#define OVERLAP_FACTOR 0.1
-
-void exportSpectrogramData(float32_t **spectrogram, int binSize, int fftSize, const char *filename) {
+void exportSpectrogramData(const SpectrogramOutput *output, const char *filename) {
     FILE *fp = fopen(filename, "w");
     if (fp == NULL) {
         printf("Error opening file for writing.\n");
         return;
     }
 
+    printf("Exporting spectrogram data\n");
     // Write spectrogram data to CSV file
-    for (int i = 0; i < binSize; i++) {
+    for (int i = 0; i < output->binSize; i++) {
         // Write time information for each row
-        float time = (float)i * (FFT_SIZE * (1 - OVERLAP_FACTOR)) / SAMPLING_RATE; // Calculate time in seconds
-        fprintf(fp, "%.6f, ", time);
+        fprintf(fp, "%.6f, ", output->t[i]);
 
-        for (int j = 0; j < fftSize; j++) {
-            fprintf(fp, "%.6f", spectrogram[i][j]);
-            if (j != fftSize - 1) {
+        for (int j = 0; j < output->fftSize; j++) {
+            fprintf(fp, "%.6f", output->Sxx[i][j]);
+            if (j != output->fftSize - 1) {
                 fprintf(fp, ", ");
             }
         }
-        if (i != binSize - 1) {
+        if (i != output->binSize - 1) {
             fprintf(fp, "\n");
         }
     }
     fclose(fp);
 }
 
+
+int getHammingWindow(int len, float32_t *window) {
+    if (len <= 0 || window == NULL) {
+        return -1; // Invalid input parameters
+    }
+
+    for (int i = 0; i < len; i++) {
+        window[i] = 0.54f - 0.46f * cos(2 * M_PI * i / (len - 1));
+    }
+
+    return 0; // Success
+}
