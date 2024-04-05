@@ -11,7 +11,7 @@ void generateSomeCompositSignal();
 void generateCompositSignal(float32_t fs, float32_t freq[], float32_t ampl[], int freqLen, int n_samples, float32_t *freqOut);
 
 void exportSignalData(float32_t *signal, int len, char *filename);
-void exportSpectrogramData(const char *filename, float32_t **spectrogram, int binSize, int fftSize);
+void exportSpectrogramData(float32_t **spectrogram, int binSize, int fftSize, const char *filename);
 
 
 #endif

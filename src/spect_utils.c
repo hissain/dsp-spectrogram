@@ -65,7 +65,12 @@ void generateCompositSignal(float32_t fs, float32_t freq[], float32_t ampl[], in
     free(t);
 }
 
-void exportSpectrogramData(const char *filename, float32_t **spectrogram, int binSize, int fftSize) {
+
+#define SAMPLING_RATE 25000
+#define FFT_SIZE 256
+#define OVERLAP_FACTOR 0.1
+
+void exportSpectrogramData(float32_t **spectrogram, int binSize, int fftSize, const char *filename) {
     FILE *fp = fopen(filename, "w");
     if (fp == NULL) {
         printf("Error opening file for writing.\n");
@@ -74,6 +79,10 @@ void exportSpectrogramData(const char *filename, float32_t **spectrogram, int bi
 
     // Write spectrogram data to CSV file
     for (int i = 0; i < binSize; i++) {
+        // Write time information for each row
+        float time = (float)i * (FFT_SIZE * (1 - OVERLAP_FACTOR)) / SAMPLING_RATE; // Calculate time in seconds
+        fprintf(fp, "%.6f, ", time);
+
         for (int j = 0; j < fftSize; j++) {
             fprintf(fp, "%.6f", spectrogram[i][j]);
             if (j != fftSize - 1) {
@@ -86,3 +95,4 @@ void exportSpectrogramData(const char *filename, float32_t **spectrogram, int bi
     }
     fclose(fp);
 }
+
