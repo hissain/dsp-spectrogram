@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.11)
 project(spectrogram)
 
 # Load all the source file within the folder src
-file(GLOB SOURCE_FILES_SPECT src/*.cpp src/*.c)
+file(GLOB SOURCE_FILES_SPECT src/*.cpp src/*.c src/*.h)
 
 # Add static library
 add_library(cmsisdsp STATIC IMPORTED)
@@ -18,7 +18,6 @@ add_executable(main ${SOURCE_FILES_SPECT})
 # Using target_include_directories instead of include_directories enables CMake to
 # transitively make available the header files in the projects that depend on this library.
 target_include_directories(main PUBLIC inc)
-target_include_directories(main PUBLIC inc/main)
 target_include_directories(main PUBLIC inc/core)
 target_include_directories(main PUBLIC inc/dsp)
 

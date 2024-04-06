@@ -28,12 +28,20 @@ void freeSpectrogramSpace(){
     free(spectrogram);
 }
 
+float32_t samples[10000];
+int sample_length;
+
 SpectrogramOutput generateSpectrogram() {
     SpectrogramOutput output;
     output.fftSize = FFT_SIZE;
     output.binSize = NUM_BINS;
+    
+    load_array(samples, &sample_length, "python/noise.csv");
+    //print_array(samples, sample_length);
 
-    arm_copy_f32(&sample_input[0], inputSignal, NUM_SAMPLES);
+    printf("Array loaded, size = %d, processing\n", sample_length);
+
+    arm_copy_f32(&samples[0], inputSignal, NUM_SAMPLES);
     arm_rfft_fast_init_f32(&fftInstance, FFT_SIZE);
 
     exportSignalData(inputSignal, NUM_SAMPLES, "python/input.csv");

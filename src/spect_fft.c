@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "spect_fft.h"
+#include "spect_utils.h"
 #include "arm_math.h"
 #include "dsp/transform_functions.h"
 
