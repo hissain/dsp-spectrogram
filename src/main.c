@@ -9,8 +9,10 @@ int main(){
     //test_ifft();
     //test_cfft();
     
-    generateSomeCompositSignal();
-    generateSpectrogram();
+    //generateSomeCompositSignal();
+    //generateSpectrogram();
+
+    testPsd();
 
     return 0;
 }
