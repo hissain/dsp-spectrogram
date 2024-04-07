@@ -39,7 +39,7 @@ SpectrogramOutput generateSpectrogram() {
     load_array(samples, &sample_length, "python/noise.csv");
     //print_array(samples, sample_length);
 
-    printf("Array loaded, size = %d, processing\n", sample_length);
+    printf("Array loaded for spectrogram processing, size = %d\n", sample_length);
 
     arm_copy_f32(&samples[0], inputSignal, NUM_SAMPLES);
     arm_rfft_fast_init_f32(&fftInstance, FFT_SIZE);
