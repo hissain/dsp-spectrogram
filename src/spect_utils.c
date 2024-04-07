@@ -34,7 +34,7 @@ void store_array(float32_t *data, int length, const char *filename) {
 }
 
 void load_array(float32_t *data, int *length, const char *filename) {
-    int MAX_LENGTH = 102401;
+    int MAX_LINE_LENGTH = 1024;
 
     // Open the file for reading
     FILE *file = fopen(filename, "r");
@@ -44,7 +44,7 @@ void load_array(float32_t *data, int *length, const char *filename) {
     }
 
     // Read data from the file
-    char line[MAX_LENGTH];
+    char line[MAX_LINE_LENGTH];
     int i = 0;
     while (fgets(line, sizeof(line), file) != NULL) {
         char *token = strtok(line, ",");
@@ -53,8 +53,8 @@ void load_array(float32_t *data, int *length, const char *filename) {
         while (token != NULL) {
             // Convert string to float and store in the data array
             data[i++] = atof(token);
-            if (i >= MAX_LENGTH) {
-                printf("Exceeded maximum length of data array\n");
+            if (i >= MAX_LINE_LENGTH) {
+                printf("Exceeded maximum length of line\n");
                 fclose(file);
                 return;
             }
@@ -93,11 +93,7 @@ void exportSignalData(float32_t *signal, int len, char *filename) {
     printf("Exporting signal data\n");
     // Write spectrogram data to CSV file
     for (int i = 0; i < len; i++) {
-        if (i != len-1){
-            fprintf(fp, "%f, ", signal[i]);
-        }else{
-            fprintf(fp, "%f\n", signal[i]);
-        }
+        fprintf(fp, "%f\n", signal[i]);
     }
     fclose(fp);
 }
@@ -160,7 +156,7 @@ int getHammingWindow(int len, float32_t *window) {
     }
 
     for (int i = 0; i < len; i++) {
-        window[i] = 0.53836 - 0.46164 * cos(2 * M_PI * i / (len - 1));
+        window[i] = 0.53836f - 0.46164f * cos(2 * M_PI * i / (len - 1));
     }
     return 0; // Success
 }

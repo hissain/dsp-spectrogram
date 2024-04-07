@@ -82,7 +82,7 @@ SpectrogramOutput generateSpectrogram() {
 
     output.Sxx = spectrogram;
 
-    exportSpectrogramData(&output, "python/spec1.csv");
+    exportSpectrogramData(&output, "python/spectrogram.csv");
 
     freeSpectrogramSpace();
 
