@@ -160,8 +160,8 @@ int getHammingWindow(int len, float32_t *window) {
     }
 
     for (int i = 0; i < len; i++) {
-        window[i] = 0.54f - 0.46f * cos(2 * M_PI * i / (len - 1));
+        window[i] = 0.53836 - 0.46164 * cos(2 * M_PI * i / (len - 1));
     }
-
     return 0; // Success
 }
+

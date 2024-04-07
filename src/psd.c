@@ -40,9 +40,7 @@ void generatePowerSpectralDensity(){
 
     // Welch window initialization
     float32_t welchWindow[blockSize];
-    for (int i = 0; i < blockSize; i++) {
-        welchWindow[i] = 0.53836 - 0.46164 * cos(2 * PI * i / (blockSize - 1));
-    }
+    getHammingWindow(blockSize, &welchWindow[0]);
 
     // Initialize PSD output
     for (uint32_t i = 0; i < PSD_FFT_LENGTH / 2; i++){
@@ -55,8 +53,16 @@ void generatePowerSpectralDensity(){
     // Loop through blocks
     for (uint32_t i = 0; i < PSD_NUM_BLOCKS; i++){
 
-        // Apply Welch window
-        arm_copy_f32(&samples[i * overlapSize], tempInput, blockSize);
+        // Check if the remaining portion of signals is less than the block size
+        if ((PSD_NUM_SAMPLES - (i * overlapSize)) < blockSize) {
+            // If less, pad the remaining portion with zeros
+            arm_fill_f32(0, tempInput, blockSize);
+            arm_copy_f32(&samples[i * overlapSize], tempInput, PSD_NUM_SAMPLES - (i * overlapSize));
+        } else {
+            // Otherwise, copy the block of signals
+            arm_copy_f32(&samples[i * overlapSize], tempInput, blockSize);
+        }
+
         arm_mult_f32(tempInput, welchWindow, tempInput, blockSize);
         
         arm_fill_f32(0, tempOutput, PSD_FFT_LENGTH);
