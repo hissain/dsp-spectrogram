@@ -34,7 +34,7 @@ void store_array(float32_t *data, int length, const char *filename) {
 }
 
 void load_array(float32_t *data, int *length, const char *filename) {
-    int MAX_LINE_LENGTH = 1024;
+    int MAX_LINE_LENGTH = NUM_SAMPLES;
 
     // Open the file for reading
     FILE *file = fopen(filename, "r");
