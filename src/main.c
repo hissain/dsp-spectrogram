@@ -10,7 +10,7 @@ int main(){
     //test_cfft();
     
     generateSomeCompositSignal();
-    //generateSpectrogram();
+    generateSpectrogram();
     generatePowerSpectralDensity();
 
     return 0;

@@ -73,7 +73,7 @@ void generatePowerSpectralDensity(){
         
         // Accumulate PSD in dB
         for (uint32_t j = 0; j < PSD_FFT_LENGTH / 2; j++){
-            outputPSD_dB[j] += 10 * log10(tempOutput[j]);
+            outputPSD_dB[j] += 10 * log10(tempOutput[j] + 1e-6); // Add small value to avoid log(0)
         }
     }
 

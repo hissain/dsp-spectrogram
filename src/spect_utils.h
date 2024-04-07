@@ -7,9 +7,9 @@
 #define DEBUG_PRINT printf("Debugging: File %s, Line %d\n", FILE_NAME, __LINE__);
 
 #define SAMPLING_RATE 48000
-#define FFT_SIZE 256
-#define OVERLAP_FACTOR 0.99
-#define NUM_SAMPLES 10000
+#define FFT_SIZE 1024
+#define OVERLAP_FACTOR 0.5
+#define NUM_SAMPLES 102400
 #define NUM_BINS (ceil((float)(NUM_SAMPLES - FFT_SIZE) / (FFT_SIZE * (1 - OVERLAP_FACTOR))) + 1)
 
 typedef struct {

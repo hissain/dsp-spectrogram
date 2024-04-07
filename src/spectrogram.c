@@ -17,7 +17,7 @@ arm_rfft_fast_instance_f32 fftInstance;
 void allocateSpectrogramSpace(){
     spectrogram = (float32_t **)malloc(NUM_BINS * sizeof(float32_t *));
     for (int i = 0; i < NUM_BINS; i++){
-        spectrogram[i] = (float32_t *)malloc(FFT_SIZE * sizeof(float32_t));
+        spectrogram[i] = (float32_t *)malloc(FFT_SIZE / 2 * sizeof(float32_t));
     }
 }
 
@@ -28,12 +28,12 @@ void freeSpectrogramSpace(){
     free(spectrogram);
 }
 
-float32_t samples[10000];
+float32_t samples[NUM_SAMPLES];
 int sample_length;
 
 SpectrogramOutput generateSpectrogram() {
     SpectrogramOutput output;
-    output.fftSize = FFT_SIZE;
+    output.fftSize = FFT_SIZE / 2;  // Only first half 
     output.binSize = NUM_BINS;
     
     load_array(samples, &sample_length, "python/noise.csv");
@@ -59,7 +59,7 @@ SpectrogramOutput generateSpectrogram() {
     // Allocate memory for frequency (f) array
     output.f = (float32_t *)malloc((FFT_SIZE / 2) * sizeof(float32_t));
     for (int i = 0; i < FFT_SIZE / 2; i++) {
-        output.f[i] = (float32_t)i * SAMPLING_RATE / FFT_SIZE;
+        output.f[i] = ((float32_t)i * SAMPLING_RATE) / FFT_SIZE;
     }
 
     for (int i = 0; i < NUM_BINS; i++) {
