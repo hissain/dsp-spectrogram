@@ -1,31 +1,42 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "arm_math.h"
 #include "spect_utils.h"
 
-#define SIGNAL_LENGTH   1024    // Length of input signal
-#define FFT_LENGTH      1024    // Length of FFT
-#define NUM_BLOCKS      4     // Number of blocks for Welch method
+#define PSD_FS 48000
+#define PSD_NUM_SAMPLES   102400            // Length of input signal
+#define PSD_FFT_LENGTH      1024            // Length of FFT
+#define PSD_BLOCK_LENGTH    PSD_FFT_LENGTH  // Number points in each block
+#define PSD_OVERLAP_FACTOR  0.5f
+#define PSD_NUM_BLOCKS (int)(ceil((float)(PSD_NUM_SAMPLES - PSD_FFT_LENGTH) / (PSD_FFT_LENGTH * (1 - PSD_OVERLAP_FACTOR))) + 1)
 
+static float32_t samples[PSD_NUM_SAMPLES];
+int sample_length;
 
 arm_rfft_fast_instance_f32 fftInstancePsd;
 
-void calculatePSD(float32_t* freqAxis, float32_t* outputPSD){
+void generatePowerSpectralDensity(){
 
-    float32_t inputSignal[SIGNAL_LENGTH];
-    arm_copy_f32(sample_input, inputSignal, SIGNAL_LENGTH);
-    //print_array(inputSignal, SIGNAL_LENGTH);
+    load_array(samples, &sample_length, "python/noise.csv");
 
-    uint32_t blockSize = SIGNAL_LENGTH / NUM_BLOCKS;
-    uint32_t overlapSize = blockSize / 2;
+    uint32_t blockSize = PSD_FFT_LENGTH;
+    uint32_t overlapSize = PSD_BLOCK_LENGTH * PSD_OVERLAP_FACTOR;
 
+    printf("NUM_SAMPLES = %d\n", PSD_NUM_SAMPLES);
+    printf("BLOCK_LENGTH = %d\n", PSD_BLOCK_LENGTH);
+    printf("NUM_BLOCKS = %d\n", PSD_NUM_BLOCKS);
     printf("blockSize = %d\n", blockSize);
     printf("overlapSize = %d\n", overlapSize);
 
     // Temporary buffers
-    float32_t* tempInput = (float32_t*)malloc(FFT_LENGTH * sizeof(float32_t));
-    float32_t* tempOutput = (float32_t*)malloc(FFT_LENGTH * sizeof(float32_t));
+    float32_t tempInput[PSD_FFT_LENGTH];
+    float32_t tempOutput[PSD_FFT_LENGTH];
+
+    // Output PSD and frequency axis buffers
+    float32_t outputPSD_dB[PSD_FFT_LENGTH / 2];
+    float32_t freqAxis[PSD_FFT_LENGTH / 2];
 
     // Welch window initialization
     float32_t welchWindow[blockSize];
@@ -34,64 +45,52 @@ void calculatePSD(float32_t* freqAxis, float32_t* outputPSD){
     }
 
     // Initialize PSD output
-    for (uint32_t i = 0; i < FFT_LENGTH / 2; i++){
-        outputPSD[i] = 0.0f;
+    for (uint32_t i = 0; i < PSD_FFT_LENGTH / 2; i++){
+        outputPSD_dB[i] = 0.0f;
     }
 
     // Perform FFT
-    arm_rfft_fast_init_f32(&fftInstancePsd, FFT_LENGTH);
+    arm_rfft_fast_init_f32(&fftInstancePsd, blockSize);
 
     // Loop through blocks
-    for (uint32_t i = 0; i < NUM_BLOCKS; i++){
+    for (uint32_t i = 0; i < PSD_NUM_BLOCKS; i++){
 
         // Apply Welch window
-        arm_fill_f32(0, tempInput, blockSize);
-        arm_mult_f32(&inputSignal[i * overlapSize], welchWindow, tempInput, blockSize);
-
-        //arm_fill_f32(0, tempOutput, FFT_LENGTH);
+        arm_copy_f32(&samples[i * overlapSize], tempInput, blockSize);
+        arm_mult_f32(tempInput, welchWindow, tempInput, blockSize);
+        
+        arm_fill_f32(0, tempOutput, PSD_FFT_LENGTH);
         arm_rfft_fast_f32(&fftInstancePsd, tempInput, tempOutput, 0);
 
         // Calculate power spectral density (PSD)
-        arm_cmplx_mag_squared_f32(tempOutput, tempOutput, FFT_LENGTH / 2);
-
-        // Accumulate PSD
-        for (uint32_t j = 0; j < FFT_LENGTH / 2; j++){
-            outputPSD[j] += tempOutput[j];
+        arm_cmplx_mag_squared_f32(tempOutput, tempOutput, PSD_FFT_LENGTH / 2);
+        
+        // Accumulate PSD in dB
+        for (uint32_t j = 0; j < PSD_FFT_LENGTH / 2; j++){
+            outputPSD_dB[j] += 10 * log10(tempOutput[j]);
         }
     }
 
     // Normalize PSD
-    for (uint32_t i = 0; i < FFT_LENGTH / 2; i++){
-        outputPSD[i] /= NUM_BLOCKS;
+    for (uint32_t i = 0; i < PSD_FFT_LENGTH / 2; i++){
+        outputPSD_dB[i] /= PSD_NUM_BLOCKS;
     }
 
     // Generate frequency axis
-    for (uint32_t i = 0; i < FFT_LENGTH / 2; i++){
-        freqAxis[i] = (float32_t)i / FFT_LENGTH;
+    for (uint32_t i = 0; i < PSD_FFT_LENGTH / 2; i++){
+        freqAxis[i] = (float32_t)i * (PSD_FS / PSD_FFT_LENGTH);
     }
-
-    free(tempInput);
-    free(tempOutput);
-}
-
-int testPsd(){
-    
-    // Output PSD and frequency axis buffers
-    float32_t outputPSD[FFT_LENGTH / 2];
-    float32_t freqAxis[FFT_LENGTH / 2];
-
-    // Call function to calculate PSD using Welch method
-    calculatePSD(freqAxis, outputPSD);
 
     // Save PSD data to a file
     FILE *fp;
-    fp = fopen("python/psd.txt", "w");
-    for (int i = 0; i < FFT_LENGTH / 2; i++){
-        fprintf(fp, "%f %f\n", freqAxis[i], outputPSD[i]);
+    fp = fopen("python/psd.csv", "w");
+    if (fp != NULL) {
+        for (int i = 0; i < PSD_FFT_LENGTH / 2; i++){
+            fprintf(fp, "%f %f\n", freqAxis[i], outputPSD_dB[i]);
+        }
+        fclose(fp);
+        printf("Data saved in python/psd.csv file\n");
+    } else {
+        printf("Error opening file for writing\n");
     }
-    fclose(fp);
-    
-    printf("Data saved in python/psd.txt file\n");
-
-    return 0;
 }

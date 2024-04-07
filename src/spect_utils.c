@@ -22,11 +22,10 @@ void store_array(float32_t *data, int length, const char *filename) {
     
     // Write data to the file in CSV format
     for (int i = 0; i < length; i++) {
-        fprintf(file, "%.3f", data[i]); // Adjust "%.2f" as per your precision requirement
         if (i < length - 1) {
-            fprintf(file, ",");
+            fprintf(file, "%.3f\n", data[i]);
         } else {
-            fprintf(file, "\n");
+            fprintf(file, "%.3f", data[i]);
         }
     }
     
@@ -35,8 +34,7 @@ void store_array(float32_t *data, int length, const char *filename) {
 }
 
 void load_array(float32_t *data, int *length, const char *filename) {
-
-    int MAX_LENGTH = 20000;
+    int MAX_LENGTH = 102401;
 
     // Open the file for reading
     FILE *file = fopen(filename, "r");
@@ -47,31 +45,34 @@ void load_array(float32_t *data, int *length, const char *filename) {
 
     // Read data from the file
     char line[MAX_LENGTH];
-    *length = 0;
+    int i = 0;
     while (fgets(line, sizeof(line), file) != NULL) {
         char *token = strtok(line, ",");
+
+        // Loop through tokens separated by commas
         while (token != NULL) {
-            data[*length] = atof(token); // Convert string to float
-            (*length)++;
-            if (*length >= MAX_LENGTH) {
+            // Convert string to float and store in the data array
+            data[i++] = atof(token);
+            if (i >= MAX_LENGTH) {
                 printf("Exceeded maximum length of data array\n");
                 fclose(file);
                 return;
             }
+            // Get the next token
             token = strtok(NULL, ",");
         }
     }
+    *length = i;
 
-    // Close the file
     fclose(file);
-    printf("Released file: %s\n", filename);
 }
 
+
 void generateSomeCompositSignal(){
-    int length = 10000;
+    int length = 102400;
     float32_t fs = 48000;
-    float32_t freqs[] = {30000, 5000, 12500}; //, 1580, 3000, 21000};
-    float32_t ampls[] = {1.5, 6.5, 2.5}; //, 0.8, 5.0, 1.8};
+    float32_t freqs[] = {14000, 5000, 10000};//, 1580, 3000, 21000};
+    float32_t ampls[] = {3.5, 2.5, 2.5};//, 0.8, 5.0, 1.8};
 
     float32_t *output = malloc(sizeof(float32_t) * length);
 
@@ -79,6 +80,7 @@ void generateSomeCompositSignal(){
     //print_array(output, length);
     store_array(output, length, "python/noise.csv");
     printf("Array stored at python/noise.csv\n");
+    free(output);
 }
 
 void exportSignalData(float32_t *signal, int len, char *filename) {
