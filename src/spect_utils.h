@@ -21,8 +21,8 @@ typedef struct {
 } SpectrogramOutput;
 
 void print_array(float32_t *data, int size);
-void store_array(float32_t *data, int length, const char *filename);
-void load_array(float32_t *data, int *length, const char *filename);
+void storeSignalIntoFile(float32_t *data, int length, const char *filename);
+void loadSignalFromFile(float32_t *data, int *length, const char *filename);
 
 void generateSomeCompositSignal();
 void generateCompositSignal(float32_t fs, float32_t freq[], float32_t ampl[], int freqLen, int n_samples, float32_t *freqOut);

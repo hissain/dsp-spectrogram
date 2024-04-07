@@ -12,7 +12,7 @@ void print_array(float32_t *data, int size){
     printf("\n");
 }
 
-void store_array(float32_t *data, int length, const char *filename) {
+void storeSignalIntoFile(float32_t *data, int length, const char *filename) {
     // Open the file for writing
     FILE *file = fopen(filename, "w");
     if (file == NULL) {
@@ -33,7 +33,7 @@ void store_array(float32_t *data, int length, const char *filename) {
     fclose(file);
 }
 
-void load_array(float32_t *data, int *length, const char *filename) {
+void loadSignalFromFile(float32_t *data, int *length, const char *filename) {
     int MAX_LINE_LENGTH = NUM_SAMPLES + 1; // +1 for newline safety 
     // Open the file for reading
     FILE *file = fopen(filename, "r");
@@ -76,7 +76,7 @@ void generateSomeCompositSignal(){
 
     generateCompositSignal(fs, freqs, ampls, 3, length, output);
     //print_array(output, length);
-    store_array(output, length, "python/noise.csv");
+    storeSignalIntoFile(output, length, "python/noise.csv");
     printf("Composit signal generated and stored at python/noise.csv, size:%d\n", length);
     free(output);
 }
@@ -129,6 +129,7 @@ void exportSpectrogramData(const SpectrogramOutput *output, const char *filename
     }
 
     printf("Exporting spectrogram data\n");
+
     // Write spectrogram data to CSV file
     for (int i = 0; i < output->binSize; i++) {
         // Write time information for each row
@@ -146,6 +147,7 @@ void exportSpectrogramData(const SpectrogramOutput *output, const char *filename
     }
     fclose(fp);
 }
+
 
 
 int getHammingWindow(int len, float32_t *window) {

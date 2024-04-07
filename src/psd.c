@@ -19,7 +19,7 @@ arm_rfft_fast_instance_f32 fftInstancePsd;
 
 void generatePowerSpectralDensity(){
 
-    load_array(samples, &sample_length, "python/noise.csv");
+    loadSignalFromFile(samples, &sample_length, "python/noise.csv");
 
     uint32_t blockSize = PSD_FFT_LENGTH;
     uint32_t overlapSize = PSD_BLOCK_LENGTH * PSD_OVERLAP_FACTOR;
