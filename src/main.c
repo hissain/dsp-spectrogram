@@ -12,10 +12,10 @@ int main(){
     float32_t samples[NUM_SAMPLES];
     int length = NUM_SAMPLES;
 
-    generateSomeCompositSignal(samples, length);
+    generateCompositSignalWithLength(samples, length);
     storeSignalIntoFile(samples, length, "python/noise.csv");
     generateSpectrogram(samples, length);
-    generatePowerSpectralDensity();
+    generatePowerSpectralDensity(samples, length);
 
     return 0;
 }

@@ -66,12 +66,12 @@ void loadSignalFromFile(float32_t *data, int *length, const char *filename) {
     fclose(file);
 }
 
-void generateSomeCompositSignal(float32_t *samples, int length) {
+void generateCompositSignalWithLength(float32_t *samples, int length) {
     float32_t fs = 48000;
-    float32_t freqs[] = {14000, 5000, 10000};//, 1580, 3000, 21000};
-    float32_t ampls[] = {3.5, 2.5, 2.5};//, 0.8, 5.0, 1.8};
+    float32_t freqs[] = {14000, 5000, 10000, 1580, 3000, 21000};
+    float32_t ampls[] = {3.5, 2.5, 2.5, 0.8, 5.0, 1.8};
 
-    generateCompositSignal(fs, freqs, ampls, 3, length, samples);
+    generateCompositSignal(fs, freqs, ampls, 6, length, samples);
     printf("Composit signal generated and stored at python/noise.csv, size:%d\n", length);
 }
 

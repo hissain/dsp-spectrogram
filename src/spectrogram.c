@@ -6,8 +6,6 @@
 #include "support_functions.h"
 #include "spect_utils.h"
 
-#define PADDING_SIZE 512  // Choose a suitable padding size
-
 float32_t inputSignal[NUM_SAMPLES + 2 * PADDING_SIZE]; // Add padding to input signal
 float32_t fftInput[2 * FFT_SIZE];
 float32_t fftOutput[2 * FFT_SIZE];

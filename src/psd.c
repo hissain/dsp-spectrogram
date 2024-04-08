@@ -12,14 +12,28 @@
 #define PSD_OVERLAP_FACTOR  0.5f
 #define PSD_NUM_BLOCKS (int)(ceil((float)(PSD_NUM_SAMPLES - PSD_FFT_LENGTH) / (PSD_FFT_LENGTH * (1 - PSD_OVERLAP_FACTOR))) + 1)
 
-static float32_t samples[PSD_NUM_SAMPLES];
-int sample_length;
-
 arm_rfft_fast_instance_f32 fftInstancePsd;
 
-void generatePowerSpectralDensity(){
+// Output PSD and frequency axis buffers
+float32_t outputPSD_dB[PSD_FFT_LENGTH / 2];
+float32_t freqAxis[PSD_FFT_LENGTH / 2];
 
-    loadSignalFromFile(samples, &sample_length, "python/noise.csv");
+void exportPowerSpectralDensity(){
+    // Save PSD data to a file
+    FILE *fp;
+    fp = fopen("python/psd.csv", "w");
+    if (fp != NULL) {
+        for (int i = 0; i < PSD_FFT_LENGTH / 2; i++){
+            fprintf(fp, "%f %f\n", freqAxis[i], outputPSD_dB[i]);
+        }
+        fclose(fp);
+        printf("Data saved in python/psd.csv file\n");
+    } else {
+        printf("Error opening file for writing\n");
+    }
+}
+
+void generatePowerSpectralDensity(float32_t* samples, int sample_length){
 
     uint32_t blockSize = PSD_FFT_LENGTH;
     uint32_t overlapSize = PSD_BLOCK_LENGTH * PSD_OVERLAP_FACTOR;
@@ -33,10 +47,6 @@ void generatePowerSpectralDensity(){
     // Temporary buffers
     float32_t tempInput[PSD_FFT_LENGTH];
     float32_t tempOutput[PSD_FFT_LENGTH];
-
-    // Output PSD and frequency axis buffers
-    float32_t outputPSD_dB[PSD_FFT_LENGTH / 2];
-    float32_t freqAxis[PSD_FFT_LENGTH / 2];
 
     // Welch window initialization
     float32_t welchWindow[blockSize];
@@ -87,16 +97,5 @@ void generatePowerSpectralDensity(){
         freqAxis[i] = (float32_t)i * (PSD_FS / PSD_FFT_LENGTH);
     }
 
-    // Save PSD data to a file
-    FILE *fp;
-    fp = fopen("python/psd.csv", "w");
-    if (fp != NULL) {
-        for (int i = 0; i < PSD_FFT_LENGTH / 2; i++){
-            fprintf(fp, "%f %f\n", freqAxis[i], outputPSD_dB[i]);
-        }
-        fclose(fp);
-        printf("Data saved in python/psd.csv file\n");
-    } else {
-        printf("Error opening file for writing\n");
-    }
+    exportPowerSpectralDensity();
 }
