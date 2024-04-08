@@ -23,3 +23,6 @@ target_include_directories(main PUBLIC inc/dsp)
 
 # Indicate that the application depends on the library math
 target_link_libraries(main cmsisdsp)
+
+# 'm' for including math library explicitly
+target_link_libraries(main m) 
