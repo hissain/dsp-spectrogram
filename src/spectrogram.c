@@ -45,17 +45,8 @@ void freeSpectrogramSpace(){
     free(spectrogramData);
 }
 
-float32_t samples[NUM_SAMPLES];
-int sample_length;
-
-
-void generateSpectrogram() {
+void generateSpectrogram(float32_t *samples, int sample_length) {
     
-    loadSignalFromFile(samples, &sample_length, "python/noise.csv");
-    //print_array(samples, sample_length);
-
-    printf("Array loaded for spectrogram processing, size = %d\n", sample_length);
-
     // Apply padding to the input signal
     for (int i = 0; i < PADDING_SIZE; i++) {
         inputSignal[i] = 0.0f;

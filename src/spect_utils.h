@@ -25,9 +25,9 @@ void print_array(float32_t *data, int size);
 void storeSignalIntoFile(float32_t *data, int length, const char *filename);
 void loadSignalFromFile(float32_t *data, int *length, const char *filename);
 
-void generateSomeCompositSignal();
+void generateSomeCompositSignal(float32_t *samples, int length);
 void generateCompositSignal(float32_t fs, float32_t freq[], float32_t ampl[], int freqLen, int n_samples, float32_t *freqOut);
-void generateSpectrogram();
+void generateSpectrogram(float32_t *samples, int sample_length);
 
 void exportSignalData(float32_t *signal, int len, char *filename);
 void exportSpectrogramData(const SpectrogramOutput *spectrogramData, const char *filename);

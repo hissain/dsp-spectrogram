@@ -66,19 +66,13 @@ void loadSignalFromFile(float32_t *data, int *length, const char *filename) {
     fclose(file);
 }
 
-void generateSomeCompositSignal(){
-    int length = 102400;
+void generateSomeCompositSignal(float32_t *samples, int length) {
     float32_t fs = 48000;
     float32_t freqs[] = {14000, 5000, 10000};//, 1580, 3000, 21000};
     float32_t ampls[] = {3.5, 2.5, 2.5};//, 0.8, 5.0, 1.8};
 
-    float32_t *spectrogramData = malloc(sizeof(float32_t) * length);
-
-    generateCompositSignal(fs, freqs, ampls, 3, length, spectrogramData);
-    //print_array(spectrogramData, length);
-    storeSignalIntoFile(spectrogramData, length, "python/noise.csv");
+    generateCompositSignal(fs, freqs, ampls, 3, length, samples);
     printf("Composit signal generated and stored at python/noise.csv, size:%d\n", length);
-    free(spectrogramData);
 }
 
 void exportSignalData(float32_t *signal, int len, char *filename) {

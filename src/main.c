@@ -9,8 +9,12 @@ int main(){
     //test_ifft();
     //test_cfft();
     
-    generateSomeCompositSignal();
-    generateSpectrogram();
+    float32_t samples[NUM_SAMPLES];
+    int length = NUM_SAMPLES;
+
+    generateSomeCompositSignal(samples, length);
+    storeSignalIntoFile(samples, length, "python/noise.csv");
+    generateSpectrogram(samples, length);
     generatePowerSpectralDensity();
 
     return 0;
