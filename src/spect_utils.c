@@ -69,7 +69,7 @@ void loadSignalFromFile(float32_t *data, int *length, const char *filename) {
 void generateCompositSignalWithLength(float32_t *samples, int length) {
     float32_t fs = 48000;
     float32_t freqs[] = {14000, 5000, 10000, 1580, 3000, 21000};
-    float32_t ampls[] = {3.5, 2.5, 2.5, 0.8, 5.0, 1.8};
+    float32_t ampls[] = {3.5, 2.5, 2.5, 0.8, 5.0, 10.8};
 
     generateCompositSignal(fs, freqs, ampls, 6, length, samples);
     printf("Composit signal generated and stored at python/noise.csv, size:%d\n", length);
@@ -121,17 +121,14 @@ void exportSpectrogramData(const SpectrogramOutput *spectrogramData, const char 
         printf("Error opening file for writing.\n");
         return;
     }
-
-    printf("Exporting spectrogram data\n");
-
     // Write spectrogram data to CSV file
     for (int i = 0; i < spectrogramData->binSize; i++) {
         // Write time information for each row
         fprintf(fp, "%.6f, ", spectrogramData->t[i]);
 
-        for (int j = 0; j < spectrogramData->fftSize; j++) {
+        for (int j = 0; j < spectrogramData->freqSize; j++) {
             fprintf(fp, "%.6f", spectrogramData->Sxx[i][j]);
-            if (j != spectrogramData->fftSize - 1) {
+            if (j != spectrogramData->freqSize - 1) {
                 fprintf(fp, ", ");
             }
         }
