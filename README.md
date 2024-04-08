@@ -1,30 +1,28 @@
 # Spectrogram Generation using CMSIS DSP
 
-This project implements spectrogram generation using CMSIS DSP in C/C++. It provides both C code for generating spectrograms using CMSIS DSP and Python code for plotting the spectrograms.
+This project aims to implement spectrogram generation using CMSIS DSP in C/C++. It provides both C code for generating spectrograms utilizing CMSIS DSP library APIs (i.e. FFT, Fast Fourier Transform and so on) and Python code for plotting the spectrograms.
 
 ## Folder Structure
 
 - `/python`: Contains Python code for plotting spectrograms.
-- `/cmsis`: Contains CMSIS DSP code for generating spectrograms.
-- `/src`: Contains source code for testing the spectrogram generation.
+- `/cmsis`: Contains CMSIS DSP library code for utilized for generating spectrograms.
+- `/src`: Contains source code for implementing and testing the spectrogram generation.
 
 ## Prerequisites
 
 - CMake
 - CMSIS DSP library
-- Python 3.x
+- (Optional) Python 3.x/ Jupyter/ Notebook
 - (Optional) matplotlib (for Python spectrogram plotting from /python folder)
 
 ## Usage
 
 1. Clone the repository:
-
     ```bash
     git clone https://github.com/hissain/dsp-spectrogram.git
     ```
 
 2. Build the CMSIS DSP module using script:
-
     ```bash
     cd dsp-spectrogram
     cd cmsis
@@ -38,7 +36,7 @@ This project implements spectrogram generation using CMSIS DSP in C/C++. It prov
     sh build.sh
     ```
    
-5. Run the generated executable to generate spectrogram data.
+5. Run the generated executable to generate spectrogram data. Please refer to src/main.c to understand whats going on and start exploring from there. 
    ```bash
     sh run.sh
     ```
