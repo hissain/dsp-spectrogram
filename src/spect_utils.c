@@ -72,13 +72,13 @@ void generateSomeCompositSignal(){
     float32_t freqs[] = {14000, 5000, 10000};//, 1580, 3000, 21000};
     float32_t ampls[] = {3.5, 2.5, 2.5};//, 0.8, 5.0, 1.8};
 
-    float32_t *output = malloc(sizeof(float32_t) * length);
+    float32_t *spectrogramData = malloc(sizeof(float32_t) * length);
 
-    generateCompositSignal(fs, freqs, ampls, 3, length, output);
-    //print_array(output, length);
-    storeSignalIntoFile(output, length, "python/noise.csv");
+    generateCompositSignal(fs, freqs, ampls, 3, length, spectrogramData);
+    //print_array(spectrogramData, length);
+    storeSignalIntoFile(spectrogramData, length, "python/noise.csv");
     printf("Composit signal generated and stored at python/noise.csv, size:%d\n", length);
-    free(output);
+    free(spectrogramData);
 }
 
 void exportSignalData(float32_t *signal, int len, char *filename) {
@@ -121,7 +121,7 @@ void generateCompositSignal(float32_t fs, float32_t freq[], float32_t ampl[], in
 }
 
 
-void exportSpectrogramData(const SpectrogramOutput *output, const char *filename) {
+void exportSpectrogramData(const SpectrogramOutput *spectrogramData, const char *filename) {
     FILE *fp = fopen(filename, "w");
     if (fp == NULL) {
         printf("Error opening file for writing.\n");
@@ -131,17 +131,17 @@ void exportSpectrogramData(const SpectrogramOutput *output, const char *filename
     printf("Exporting spectrogram data\n");
 
     // Write spectrogram data to CSV file
-    for (int i = 0; i < output->binSize; i++) {
+    for (int i = 0; i < spectrogramData->binSize; i++) {
         // Write time information for each row
-        fprintf(fp, "%.6f, ", output->t[i]);
+        fprintf(fp, "%.6f, ", spectrogramData->t[i]);
 
-        for (int j = 0; j < output->fftSize; j++) {
-            fprintf(fp, "%.6f", output->Sxx[i][j]);
-            if (j != output->fftSize - 1) {
+        for (int j = 0; j < spectrogramData->fftSize; j++) {
+            fprintf(fp, "%.6f", spectrogramData->Sxx[i][j]);
+            if (j != spectrogramData->fftSize - 1) {
                 fprintf(fp, ", ");
             }
         }
-        if (i != output->binSize - 1) {
+        if (i != spectrogramData->binSize - 1) {
             fprintf(fp, "\n");
         }
     }

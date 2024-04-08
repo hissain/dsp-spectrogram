@@ -11,6 +11,7 @@
 #define OVERLAP_FACTOR 0.5
 #define NUM_SAMPLES 102400
 #define NUM_BINS (ceil((float)(NUM_SAMPLES - FFT_SIZE) / (FFT_SIZE * (1 - OVERLAP_FACTOR))) + 1)
+#define STRIDE  ((int)(FFT_SIZE * (1 - OVERLAP_FACTOR)))
 
 typedef struct {
     int fftSize;
@@ -26,10 +27,10 @@ void loadSignalFromFile(float32_t *data, int *length, const char *filename);
 
 void generateSomeCompositSignal();
 void generateCompositSignal(float32_t fs, float32_t freq[], float32_t ampl[], int freqLen, int n_samples, float32_t *freqOut);
-SpectrogramOutput generateSpectrogram();
+void generateSpectrogram();
 
 void exportSignalData(float32_t *signal, int len, char *filename);
-void exportSpectrogramData(const SpectrogramOutput *output, const char *filename);
+void exportSpectrogramData(const SpectrogramOutput *spectrogramData, const char *filename);
 int getHammingWindow(int len, float32_t *window);
 
 

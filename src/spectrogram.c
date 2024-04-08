@@ -12,31 +12,44 @@ float32_t inputSignal[NUM_SAMPLES + 2 * PADDING_SIZE]; // Add padding to input s
 float32_t fftInput[2 * FFT_SIZE];
 float32_t fftOutput[2 * FFT_SIZE];
 float32_t magnitude[FFT_SIZE];
-float32_t **spectrogram;
+
+SpectrogramOutput *spectrogramData;
 
 arm_rfft_fast_instance_f32 fftInstance;
 
 void allocateSpectrogramSpace(){
-    spectrogram = (float32_t **)malloc(NUM_BINS * sizeof(float32_t *));
+    spectrogramData = (SpectrogramOutput *) malloc(sizeof(SpectrogramOutput));
+    spectrogramData->fftSize = FFT_SIZE / 2;  // Only first half 
+    spectrogramData->binSize = NUM_BINS;
+    spectrogramData->Sxx = (float32_t **)malloc(NUM_BINS * sizeof(float32_t *));
     for (int i = 0; i < NUM_BINS; i++){
-        spectrogram[i] = (float32_t *)malloc(FFT_SIZE / 2 * sizeof(float32_t));
+        spectrogramData->Sxx[i] = (float32_t *)malloc(FFT_SIZE / 2 * sizeof(float32_t));
+    }
+    spectrogramData->f = (float32_t *)malloc((FFT_SIZE / 2) * sizeof(float32_t));
+    for (int i = 0; i < FFT_SIZE / 2; i++) {
+        spectrogramData->f[i] = ((i * SAMPLING_RATE) / FFT_SIZE);
+    }
+    spectrogramData->t = (float32_t *)malloc(NUM_BINS * sizeof(float32_t));
+    for (int i = 0; i < NUM_BINS; i++) {
+        spectrogramData->t[i] = (float32_t)i * STRIDE / SAMPLING_RATE;
     }
 }
 
 void freeSpectrogramSpace(){
     for (int i = 0; i < NUM_BINS; i++){
-        free(spectrogram[i]);
+        free(spectrogramData->Sxx[i]);
     }
-    free(spectrogram);
+    free(spectrogramData->Sxx);
+    free(spectrogramData->f);
+    free(spectrogramData->t);
+    free(spectrogramData);
 }
 
 float32_t samples[NUM_SAMPLES];
 int sample_length;
 
-SpectrogramOutput generateSpectrogram() {
-    SpectrogramOutput output;
-    output.fftSize = FFT_SIZE / 2;  // Only first half 
-    output.binSize = NUM_BINS;
+
+void generateSpectrogram() {
     
     loadSignalFromFile(samples, &sample_length, "python/noise.csv");
     //print_array(samples, sample_length);
@@ -58,18 +71,12 @@ SpectrogramOutput generateSpectrogram() {
 
     allocateSpectrogramSpace();
 
-    int stepSize = FFT_SIZE * (1 - OVERLAP_FACTOR); // Calculate the step size for overlapping
-
-    // Allocate memory for time (t) array
-    output.t = (float32_t *)malloc(NUM_BINS * sizeof(float32_t));
-    for (int i = 0; i < NUM_BINS; i++) {
-        *(output.t + i) = (float32_t)i * stepSize / SAMPLING_RATE;
-    }
+    
 
     for (int i = 0; i < NUM_BINS; i++) {
         // Copy input signal segment to FFT input buffer with overlapping
         arm_fill_f32(0, fftInput, 2 * FFT_SIZE); // Clear previous data
-        arm_copy_f32(&inputSignal[i * stepSize], fftInput, FFT_SIZE);
+        arm_copy_f32(&inputSignal[i * STRIDE], fftInput, FFT_SIZE);
         arm_rfft_fast_f32(&fftInstance, fftInput, fftOutput, 0);
 
         // Calculate magnitude of FFT output
@@ -81,21 +88,10 @@ SpectrogramOutput generateSpectrogram() {
         }
 
         // Store spectrogram data
-        arm_copy_f32(magnitude, &spectrogram[i][0], FFT_SIZE);
-    }
-
-    output.Sxx = spectrogram;
-
-    // Allocate memory for frequency (f) array
-    output.f = (float32_t *)malloc((FFT_SIZE / 2) * sizeof(float32_t));
-    for (int i = 0; i < FFT_SIZE / 2; i++) {
-        *(output.f + i) = ((i * SAMPLING_RATE) / FFT_SIZE);
+        arm_copy_f32(magnitude, &spectrogramData->Sxx[i][0], FFT_SIZE);
     }
 
     // Export spectrogram data
-    exportSpectrogramData(&output, "python/spectrogram.csv");
-
+    exportSpectrogramData(spectrogramData, "python/spectrogram.csv");
     freeSpectrogramSpace();
-
-    return output;
 }
