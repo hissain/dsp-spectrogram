@@ -58,8 +58,8 @@ void generateSpectrogram(float32_t *samples, int sample_length, int padding_size
     float32_t magnitude[fft_size];
     for (int i = 0; i < spectrogramData->binSize; i++) {
         // Print current iteration and related information
-        printf("Iteration %03d/%d: segment: %.3f - %.3f seconds\n", i + 1, spectrogramData->binSize, 
-            spectrogramData->t[i], spectrogramData->t[i] + (1.0f * fft_size / sampling_rate));
+        // printf("Iteration %03d/%d: segment: %.3f - %.3f seconds\n", i + 1, spectrogramData->binSize, 
+        //     spectrogramData->t[i], spectrogramData->t[i] + (1.0f * fft_size / sampling_rate));
 
         // Check if the remaining portion of signals is less than the block size
         int blockSize = fft_size;

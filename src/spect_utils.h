@@ -32,6 +32,7 @@ void exportSignalData(float32_t *signal, int len, char *filename);
 void exportSpectrogramData(const SpectrogramOutput *spectrogramData, const char *filename);
 int getHammingWindow(int len, float32_t *window);
 
+int hilbertTransform(float32_t* inputSignal, int length);
 
 void generatePowerSpectralDensity(float32_t *samples, int sample_length);
 
