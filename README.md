@@ -1,4 +1,4 @@
-# Spectrogram Generation using CMSIS DSP
+# Spectrogram/ PSD Generation using CMSIS DSP
 
 This project aims to implement spectrogram generation using CMSIS DSP in C/C++. It provides both C code for generating spectrograms utilizing CMSIS DSP library APIs (i.e. FFT, Fast Fourier Transform and so on) and Python code for plotting the spectrograms.
 
