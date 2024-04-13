@@ -1,3 +1,6 @@
+// Author: Md. Sazzad Hissain Khan
+// Copyright (c) 2024 Md. Sazzad Hissain Khan. All rights reserved.
+
 #include <string.h>
 #include "arm_math_types.h"
 

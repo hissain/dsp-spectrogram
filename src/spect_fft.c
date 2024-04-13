@@ -1,3 +1,6 @@
+// Author: Md. Sazzad Hissain Khan
+// Copyright (c) 2024 Md. Sazzad Hissain Khan. All rights reserved.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
