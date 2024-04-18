@@ -13,7 +13,7 @@
 #define PSD_FFT_LENGTH      1024            // Length of FFT
 #define PSD_BLOCK_LENGTH    PSD_FFT_LENGTH  // Number points in each block
 #define PSD_OVERLAP_FACTOR  0.5f
-#define PSD_NUM_BLOCKS (int)(ceil((float)(PSD_NUM_SAMPLES - PSD_FFT_LENGTH) / (PSD_FFT_LENGTH * (1 - PSD_OVERLAP_FACTOR))) + 1)
+#define PSD_NUM_BLOCKS (int)(ceil((PSD_NUM_SAMPLES - PSD_BLOCK_LENGTH) / (PSD_BLOCK_LENGTH * (1.0f - PSD_OVERLAP_FACTOR))))
 
 arm_rfft_fast_instance_f32 fftInstancePsd;
 
@@ -41,6 +41,7 @@ void generatePowerSpectralDensity(float32_t* samples, int sample_length){
     uint32_t blockSize = PSD_FFT_LENGTH;
     uint32_t overlapSize = PSD_BLOCK_LENGTH * PSD_OVERLAP_FACTOR;
 
+    printf("Generating PSD, Power Spectral Density...\n");
     printf("NUM_SAMPLES = %d\n", PSD_NUM_SAMPLES);
     printf("BLOCK_LENGTH = %d\n", PSD_BLOCK_LENGTH);
     printf("NUM_BLOCKS = %d\n", PSD_NUM_BLOCKS);
@@ -66,18 +67,9 @@ void generatePowerSpectralDensity(float32_t* samples, int sample_length){
     // Loop through blocks
     for (uint32_t i = 0; i < PSD_NUM_BLOCKS; i++){
 
-        // Check if the remaining portion of signals is less than the block size
-        if ((PSD_NUM_SAMPLES - (i * overlapSize)) < blockSize) {
-            // If less, pad the remaining portion with zeros
-            arm_fill_f32(0, tempInput, blockSize);
-            arm_copy_f32(&samples[i * overlapSize], tempInput, PSD_NUM_SAMPLES - (i * overlapSize));
-        } else {
-            // Otherwise, copy the block of signals
-            arm_copy_f32(&samples[i * overlapSize], tempInput, blockSize);
-        }
-
+        arm_fill_f32(0, tempInput, blockSize);
+        arm_copy_f32(&samples[i * overlapSize], tempInput, blockSize);
         arm_mult_f32(tempInput, welchWindow, tempInput, blockSize);
-        
         arm_fill_f32(0, tempOutput, PSD_FFT_LENGTH);
         arm_rfft_fast_f32(&fftInstancePsd, tempInput, tempOutput, 0);
 
