@@ -9,10 +9,10 @@ void spline_cubic_interpolation(float32_t *x_in, float32_t *y_in, int len_in, fl
 }
 
 
-void export_spline(float32_t *data, int len){
+void export_spline(float32_t *data, int len, char file[100]){
     // Save PSD data to a file
     FILE *fp;
-    fp = fopen("python/spline.csv", "w");
+    fp = fopen(file, "w");
     if (fp != NULL) {
         for (int i = 0; i < len; i++){
             fprintf(fp, "%f \n", data[i]);
@@ -23,16 +23,32 @@ void export_spline(float32_t *data, int len){
     }
 }
 
-void test_spline_cubic_interpolation(){
+void test_spline_cubic_interpolation(float32_t x[], int len, int nlen){
 
-    float32_t x_in[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    float32_t y_in[10] = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+    float32_t x_in[len];
+    float32_t y_in[len];
 
-    float32_t x_out[20] = {1, 1.3, 2, 2.7, 3, -3.5, -4, 2.5, 5, 5.5, 6.5, -6.5, -7, 7.5, 8, 9.5, 9, -9.5, -10, 10.5};
-    float32_t y_out[20] = {0,};
+    float32_t df = 1/48000.0f;
+    float32_t scale = (1.0f * nlen) / len;
 
-    float32_t coef[30];
-    float32_t buff[20];
+    for(int i = 0; i < len; i++){
+        x_in[i] = df*i;
+        y_in[i] = x[i];
+    }
+
+    float32_t x_out[nlen];
+    float32_t y_out[nlen];
+
+    printf("scale: %lf\n", scale);
+    printf("df: %lf\n", df);
+    printf("nlen: %d\n", nlen);
+
+    for(int i = 0; i < nlen; i++){
+        x_out[i] = df*i / scale;
+    }
+
+    float32_t coef[3*len];
+    float32_t buff[2*len];
 
     float32_t *x_in_p = &x_in[0];
     float32_t *y_in_p = &y_in[0];
@@ -41,12 +57,16 @@ void test_spline_cubic_interpolation(){
     float32_t *cp = &coef[0];
     float32_t *bp = &buff[0];
 
+
     arm_spline_instance_f32 S;
-    arm_spline_init_f32(&S, ARM_SPLINE_PARABOLIC_RUNOUT, x_in_p, y_in_p, 10, cp, bp);
-    arm_spline_f32(&S, x_out_p, y_out_p, 20);
+    arm_spline_init_f32(&S, ARM_SPLINE_PARABOLIC_RUNOUT, x_in_p, y_in_p, len, cp, bp);
+    arm_spline_f32(&S, x_out_p, y_out_p, nlen);
 
-    print_array(x_out, 20);
-    print_array(y_out, 20);
+    print_array(x_out, nlen);
+    print_array(y_out, nlen);
 
-    export_spline(y_out, 20);
+    export_spline(x_in, len, "python/spline_x_in.csv");
+    export_spline(y_in, len, "python/spline_y_in.csv");
+    export_spline(x_out, nlen, "python/spline_x_out.csv");
+    export_spline(y_out, nlen, "python/spline_y_out.csv");
 }
