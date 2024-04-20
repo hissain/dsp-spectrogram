@@ -39,13 +39,16 @@ void test_spline_cubic_interpolation(float32_t x[], int len, int nlen){
     float32_t x_out[nlen];
     float32_t y_out[nlen];
 
-    printf("scale: %lf\n", scale);
-    printf("df: %lf\n", df);
-    printf("nlen: %d\n", nlen);
+    float32_t df_n = (x_in[len - 1] - x_in[0]) / nlen; 
 
     for(int i = 0; i < nlen; i++){
-        x_out[i] = df*i / scale;
+        x_out[i] = df_n*i;
     }
+
+    printf("df: %lf\n", df);
+    printf("df_n: %lf\n", df_n);
+    printf("nlen: %d\n", nlen);
+
 
     float32_t coef[3*len];
     float32_t buff[2*len];
