@@ -21,7 +21,7 @@ int main(){
     //generatePowerSpectralDensity(samples, length);
     //hilbertTransform(samples, length);
 
-    test_spline_cubic_interpolation(samples, 100, 200);
+    test_spline_cubic_interpolation(samples, 250, 100, 48000.0f);
 
     return 0;
 }
