@@ -24,7 +24,8 @@ int main(){
     //test_spline_cubic_interpolation(samples, 250, 100, 48000.0f);
     //test_spline_linear_interpolation(samples, 250, 100, 48000.0f);
 
-    test_kalman_filter(samples, length);
+    //test_kalman_filter(samples, length);
+    test_kalman_filter_no_ground_truth(samples, length);
 
     return 0;
 }
