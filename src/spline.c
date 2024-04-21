@@ -74,3 +74,51 @@ void test_spline_cubic_interpolation(float32_t x[], int len, int nlen, float32_t
     export_spline(x_out, nlen, "python/spline_x_out.csv");
     export_spline(y_out, nlen, "python/spline_y_out.csv");
 }
+
+void test_spline_linear_interpolation(float32_t x[], int len, int nlen, float32_t fs) {
+
+    // Define input and output arrays
+    float32_t x_in[len];
+    float32_t y_in[len];
+
+    // Calculate the time step for the input data
+    float32_t df = 1.0f / fs;
+
+    // Populate input x and y arrays
+    for(int i = 0; i < len; i++) {
+        x_in[i] = df * i;
+        y_in[i] = x[i];
+    }
+
+    float32_t scale = 1.0f * nlen / len;
+
+    // Initialize CMSIS DSP interpolation instance
+    arm_linear_interp_instance_f32 s;
+    s.x1 = 0.0f; // Assuming x1 is 0 based on provided API
+    s.xSpacing = df; // Assuming xSpacing is df based on provided API
+    s.nValues = len; // Number of input values
+    s.pYData = y_in; // Pointer to input y values
+
+    float32_t x_interpolated[nlen]; // Interpolated x values
+    float32_t y_interpolated[nlen]; // Interpolated y values
+
+    // Perform linear interpolation
+    for (int i = 0; i < nlen; i++) {
+        // Interpolate x values
+        x_interpolated[i] = df * i * scale;
+        // Interpolate y values
+        y_interpolated[i] = arm_linear_interp_f32(&s, x_interpolated[i]);
+    }
+
+    // Print interpolated values
+    printf("Interpolated Values:\n");
+    for (int i = 0; i < nlen; i++) {
+        printf("x_interpolated[%d] = %f, y_interpolated[%d] = %f\n", i, x_interpolated[i], i, y_interpolated[i]);
+    }
+
+    // Export data if needed
+    export_spline(x_in, len, "python/spline_x_in.csv");
+    export_spline(y_in, len, "python/spline_y_in.csv");
+    export_spline(x_interpolated, nlen, "python/spline_x_out_linear.csv");
+    export_spline(y_interpolated, nlen, "python/spline_y_out_linear.csv");
+}

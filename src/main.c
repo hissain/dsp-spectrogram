@@ -21,7 +21,10 @@ int main(){
     //generatePowerSpectralDensity(samples, length);
     //hilbertTransform(samples, length);
 
-    test_spline_cubic_interpolation(samples, 250, 100, 48000.0f);
+    //test_spline_cubic_interpolation(samples, 250, 100, 48000.0f);
+    //test_spline_linear_interpolation(samples, 250, 100, 48000.0f);
+
+    test_kalman_filter(samples, length);
 
     return 0;
 }
