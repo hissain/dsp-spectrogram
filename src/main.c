@@ -17,7 +17,7 @@ int main(){
     int length = NUM_SAMPLES;
 
     generateCompositSignalWithLength(samples, length);
-    //generateSpectrogram(samples, length, 0, 48000, 1024, 0.5);
+    generateSpectrogram(samples, length, 0, 48000, 1024, 0.5);
     //generatePowerSpectralDensity(samples, length);
     //hilbertTransform(samples, length);
 
@@ -25,7 +25,7 @@ int main(){
     //test_spline_linear_interpolation(samples, 250, 100, 48000.0f);
 
     //test_kalman_filter(samples, length);
-    test_kalman_filter_no_ground_truth(samples, length);
+    //test_kalman_filter_no_ground_truth(samples, length);
 
     return 0;
 }

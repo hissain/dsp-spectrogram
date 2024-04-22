@@ -7,6 +7,7 @@
 #include "arm_math_types.h"
 #include "transform_functions.h"
 #include "support_functions.h"
+#include "statistics_functions.h"
 #include "spect_utils.h"
 
 void generateSpectrogram(float32_t *samples, int sample_length, int padding_size, int sampling_rate, int fft_size, float overlap_factor) {
@@ -59,6 +60,8 @@ void generateSpectrogram(float32_t *samples, int sample_length, int padding_size
     float32_t fftInput[fft_size];
     float32_t fftOutput[fft_size];
     float32_t magnitude[fft_size];
+    uint16_t maxIndices[fft_size];
+    float32_t maxValues[fft_size];
     for (int i = 0; i < spectrogramData->binSize; i++) {
         // Print current iteration and related information
         // printf("Iteration %03d/%d: segment: %.3f - %.3f seconds\n", i + 1, spectrogramData->binSize, 
@@ -89,6 +92,17 @@ void generateSpectrogram(float32_t *samples, int sample_length, int padding_size
 
         // Store spectrogram data
         arm_copy_f32(magnitude, &spectrogramData->Sxx[i][0], fft_size / 2);
+
+        // Find the index of the maximum value along each column (frequency bin)
+        uint32_t max_index;
+        float32_t max_value;
+        arm_max_f32(&spectrogramData->Sxx[i][0], fft_size / 2, &max_value, &max_index);
+        maxIndices[i] = max_index;
+        maxValues[i] = max_value;
+    }
+
+    for (int i = 0; i < spectrogramData->binSize; i++) {
+        printf("%d: %d - %lf\n", i, maxIndices[i], maxValues[i]);
     }
 
     // Export spectrogram data
@@ -107,5 +121,3 @@ void generateSpectrogram(float32_t *samples, int sample_length, int padding_size
 
     printf("Spectrogram generation complete.\n");
 }
-
-
